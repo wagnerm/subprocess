@@ -88,6 +88,24 @@ module Subprocess
     output
   end
 
+  # Similar to {Subprocess::check_call}, but return Process::Status along with
+  # the contents of stdout.
+  # This method does not raise on a non-zero exit code.
+  #
+  # @example Get the system load
+  #   output, status = Subprocess.check_call_with_output(['uptime'])
+  #
+  # @return [Process::Status], [String] The Process status and output string.
+  #
+  # @see Process#initialize
+  def self.check_call_with_output(cmd, opts={}, &blk)
+    opts[:stdout] = PIPE
+    child = Process.new(cmd, opts, &blk)
+    output, _ = child.communicate
+    status = child.wait
+    return status, output
+  end
+
   # Print a human readable interpretation of a process exit status.
   #
   # @param [::Process::Status] status The status returned by `waitpid2`.

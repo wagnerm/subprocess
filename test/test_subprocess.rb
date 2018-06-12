@@ -105,6 +105,27 @@ EOF
     end
   end
 
+  describe '.check_call_with_output' do
+    it 'returns the stdout of the command' do
+      string = 'hello world'
+      status, output = Subprocess.check_call_with_output(['echo', '-n', string])
+      status.success?.must_equal(true)
+      output.must_equal(string)
+    end
+
+    it 'returns non-zero status of the command' do
+      status, output = Subprocess.check_call_with_output(['false'])
+      status.success?.must_equal(false)
+      output.must_equal('')
+    end
+
+    it 'raises a NonZeroExit when calling false' do
+      lambda {
+        Subprocess.check_output(['false'])
+      }.must_raise(Subprocess::NonZeroExit)
+    end
+  end
+
   describe '.check_output' do
     it 'returns the stdout of the command' do
       string = 'hello world'
